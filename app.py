@@ -271,7 +271,7 @@ def manageUsers():
                              + "LEFT JOIN databaseproject.Accounts ON Accounts.AccNumber = Employee.AccNumber "
                              + "LEFT JOIN databaseproject.Contact ON Contact.AccNumber = Employee.AccNumber;")
             empData = cursor.fetchone()
-            return render_template("editCustomer.html", empData=empData, custData=custData, role=session['Role'], username=session['username'])
+            return render_template("editCustomer.html", empData=empData, custData=custData, role=session['Role'], username=session['Username'])
 
         elif request.method == "POST":
             user = request.form['editUser']
@@ -283,6 +283,10 @@ def manageUsers():
     else:
         return redirect(url_for("home"))
 
+# Query = ("SELECT * FROM Flights " + 
+#             "LEFT JOIN FlightFares ON FlightFares.FLNO = Flights.FLNO " + 
+#             "LEFT JOIN OperatedBy ON OperatedBy.FLNO = FlightFares.FLNO " + 
+#             "LEFT JOIN StopsAt ON StopsAt.FLNO = Flights.FLNO;")
 
 # http://localhost:5000/Flights - this will be the flights page
 @app.route("/Flights/", methods=["GET", "POST"])
@@ -307,8 +311,9 @@ def flights():
             "LEFT JOIN StopsAt ON StopsAt.FLNO = Flights.FLNO;")
             cursor.execute(Query)
             Data = cursor.fetchall()
+            print(Data)
 
-            return render_template("Flights.html", Data=Data, role=session['Role'])
+            return render_template("Flights.html", role=session['Role'], username=session['Username'])
 
         elif request.method == "POST":
             # imd = request.form.to_dict(flat=False)
@@ -331,7 +336,7 @@ def flights():
                              + "LEFT JOIN databaseproject.Accounts ON Accounts.AccNumber = Employee.AccNumber "
                              + "LEFT JOIN databaseproject.Contact ON Contact.AccNumber = Employee.AccNumber;")
             empData = cursor.fetchone()
-            return render_template("editCustomer.html", empData=empData, custData=custData, role=session['Role'], username=session['username'])
+            return render_template("editCustomer.html", empData=empData, custData=custData, role=session['Role'], username=session['Username'])
 
         elif request.method == "POST":
             user = request.form['editUser']
