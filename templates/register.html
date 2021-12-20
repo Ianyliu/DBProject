@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <title>Register</title>
+    </head>
+
+    <body>
+        <p>Register New User</p>
+
+        <form action="{{ url_for('register') }}" method="post" autocomplete="off">
+           
+            <p>
+                <label>First Name</label>
+                <input type="text" name="FirstName" id="FirstName" maxlength="45" placeholder="Enter your first name" required/>
+            </p>
+
+            <p>
+                <label>Last Name</label>
+                <input type="text" name="LastName" id="LastName" maxlength="45" placeholder="Enter your last name" required/>
+            </p>
+
+            <p>
+                <label>Your Email</label>
+                <input type="text" name="email" id="email" minlength="1" maxlength="45" placeholder="Enter your Email" required/>
+            </p>
+
+            <p>
+                <label>Username</label>
+                <input type="text" name="username" id="username" minlength="2" maxlength="45" placeholder="No spaces please" pattern="^\S+$" required />
+            </p>
+            
+            <p>
+                <label>Password</label>
+                <input type="password" name="password" id="password" minlength="5" maxlength="45" placeholder="Password" required placeholder="Enter your Password" />
+            </p>
+            
+            
+            <div id="msg" onchange="alertUser(this.value)">{{ msg }}</div>
+            <input type="submit" value="Register" name="" />
+        
+            <p>
+                <a href="{{ url_for('login') }}">Login</a>
+            </p>
+            
+        </form>
+
+    </body>
+    <script>
+        window.addEventListener('beforeunload', function (e) {
+            (e || window.event).returnValue = "Are you sure you want to leave this page? All changes may be lost";
+        });
+
+        function alertUser(msg) {
+            alert(msg);
+        }
+    </script>
+</html>
