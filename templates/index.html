@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>Login</title>
+    </head>
+
+    <body>
+
+        <p>Login</p>
+        <p>Please enter your username and password</p>
+
+        <form class="form-group" action="{{ url_for('login') }}" method="post">
+
+            <p>
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Username" id="username" autocomplete="username" maxlength="45" required />
+            </p>
+
+            <p>
+                <label>Password</label>
+                <input type="password" class="form-control" name="password" placeholder="Password" id="password" autocomplete="current-password" maxlength="45" required />
+            </p>
+
+            <input type="checkbox" value="checked" /><b>Remember</b>
+            <br><input type="submit" value="Login" name="" />
+
+        </form>
+
+        <div id="msg" onchange="alertUser(this.value)">{{ msg }}</div>
+            <p>No account <a href="{{ url_for('register') }}">Register</a></p>
+        </div>
+
+    </body>
+<script>
+    function alertUser(msg) {
+        alert(msg);
+    }
+</script>
+</html>
