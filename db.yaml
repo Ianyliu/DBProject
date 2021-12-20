@@ -1,0 +1,4 @@
+mysql_host: 'database-project.cydrszq23mx4.us-east-2.rds.amazonaws.com'
+mysql_user: 'admin'
+mysql_password: 'database-project'
+mysql_db: 'databaseproject'
