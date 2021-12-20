@@ -3,7 +3,7 @@
 <html>
 
 <head>
-    <title>CitySmart - User Management</title>
+    <title>Flights</title>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="//cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css">
     <link rel="stylesheet" href="//unpkg.com/flatpickr/dist/flatpickr.min.css">
@@ -193,7 +193,7 @@
     </style>
 
 </head>
-<p>{{data}}</p>
+<p>{{Data}}</p>
 <div class="navul" style="height:80px;background:#000000;">
     <a class="navul" style="background:#000000;" href="http://aworldbridge.com">
         <img class="banner" src="/images/NewWBBanner.jpg" style="width:500px;height:76px;" />
@@ -225,7 +225,7 @@
     <div class="container" style="width: 900px">
         <div class="container" style="width: 850px">
             <div class="page-header text-center">
-                <h1><span class="fa fa-list"></span><strong> CitySmart - User Management </strong></h1>
+                <h1><span class="fa fa-list"></span><strong>User Management </strong></h1>
                 <h4><span class="fa fa-user"></span>&nbsp;<strong>User Name</strong>: {{username}} </h4>
             </div>
         </div>
@@ -369,68 +369,60 @@
 
         <script type="text/javascript">
             let rowSelected, thArray, DropMenu, queryString1, queryString2;
-            let data = '{{empData | tojson}}';
+            let data = '{{Data | tojson}}';
             data = JSON.parse(data);
             let role = '{{role}}'
-            console.log(data);
+            console.log(role);
             console.log(data[0]);
             let table = $('#table').DataTable({
                 data: data,
                 columns: [{
-                        title: 'Account Number',
-                        data: 'AccNumber'
+                        title: 'Flight Number',
+                        data: 'FLNO'
                     },
                     {
-                        title: 'SSN',
-                        data: 'SSN'
+                        title: 'Number Of Seats',
+                        data: 'NumOfSeats'
                     },
                     {
-                        title: 'Username',
-                        data: 'Username'
+                        title: 'Airline ID',
+                        data: 'ALID'
                     },
                     {
-                        title: 'First Name',
-                        data: 'FirstName'
+                        title: 'Day Of Week',
+                        data: 'DayOfWeek'
                     },
                     {
-                        title: 'Last Name',
-                        data: 'LastName'
+                        title: 'Domestic Or International',
+                        data: 'DomesticOrInternational'
                     },
                     {
-                        title: 'Role',
-                        data: 'Role'
+                        title: 'Fare',
+                        data: 'Fare'
                     },
                     {
-                        title: 'Hourly Rate',
-                        data: 'HourlyRate'
+                        title: 'Advanced Purchase',
+                        data: 'AdvancedPurchase'
                     },
                     {
-                        title: 'Email Address',
-                        data: 'EmailAddress'
+                        data: 'LengthOfStay',
+                        title: 'Length Of Stay'
                     },
                     {
-                        title: 'Telephone Number',
-                        data: 'Telephone'
+                        title: 'Operated By',
+                        data: 'ALname'
                     },
                     {
-                        title: 'Start Date',
-                        data: 'StartDate'
+                        title: 'Arrival Time',
+                        data: 'ArrivalTime'
                     },
                     {
-                        title: 'Account Created On',
-                        data: 'AccCreateDate'
+                        title: 'Depart Time',
+                        data: 'DepartTime'
                     },
                     {
-                        title: 'Account Email',
-                        data: 'AccEmail'
-                    },
-                    {
-                        title: 'Created by User',
-                        data: 'CreatedByUser'
-                    },
-                    {
-                        title: 'Date Modified',
-                        data: 'DateModified'
+                        title: 'Flight Type',
+                        data: 'FlightType'
                     }
                 ],
                 "responsive": true,
