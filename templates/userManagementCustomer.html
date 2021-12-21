@@ -368,7 +368,7 @@
 
         <script type="text/javascript">
             let rowSelected, thArray, DropMenu, queryString1, queryString2;
-            let data = '{{empData | tojson}}';
+            let data = '{{custData | tojson}}';
             data = JSON.parse(data);
             let role = '{{role}}'
             console.log(data);
@@ -378,10 +378,6 @@
                 columns: [{
                         title: 'Account Number',
                         data: 'AccNumber'
-                    },
-                    {
-                        title: 'SSN',
-                        data: 'SSN'
                     },
                     {
                         title: 'Username',
@@ -400,8 +396,8 @@
                         data: 'Role'
                     },
                     {
-                        title: 'Hourly Rate',
-                        data: 'HourlyRate'
+                        title: 'Date Modified',
+                        data: 'DateModified'
                     },
                     {
                         title: 'Email Address',
@@ -410,10 +406,6 @@
                     {
                         title: 'Telephone Number',
                         data: 'Telephone'
-                    },
-                    {
-                        title: 'Start Date',
-                        data: 'StartDate'
                     },
                     {
                         title: 'Account Created On',
@@ -427,10 +419,6 @@
                         title: 'Created by User',
                         data: 'CreatedByUser'
                     },
-                    {
-                        title: 'Date Modified',
-                        data: 'DateModified'
-                    }
                 ],
                 "responsive": true,
                 "paging": true,

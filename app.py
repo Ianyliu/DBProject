@@ -191,7 +191,7 @@ def editUser(requsername):
                 userData = cursor.fetchone()
                 print(userData)
                 return render_template("editEmployee.html", userData=userData, role=session['Role'])
-        elif session['Role'] == 'CustRep':
+        elif session['Role'] == 'Custrep':
             if userData['Role'] == "Customer": 
                 Query = (f"SELECT * FROM Accounts, CustomerData, Contact, Lives " +
                 f"WHERE Username = {requsername} AND Accounts.AccNumber = CustomerData.AccNumber " + 
@@ -215,8 +215,8 @@ def editUser(requsername):
 
 
 # http://localhost:5000/userManagement/Employee - this will be the edit user page
-@app.route("/userManagement/Employee", methods=["GET", "POST"])
-def manageUsers():
+@app.route("/userManagement/Employee/", methods=["GET", "POST"])
+def manageEmployees():
 
     # connect
     conn = mysql.connect()
@@ -252,7 +252,7 @@ def manageUsers():
             return redirect(url_for("editUser", requsername=user))
         else:
             pass
-    elif session['Role'] == 'CustRep':
+    elif session['Role'] == 'Custrep':
         if request.method == "GET":
             CustomerQuery = ("SELECT * FROM CustomerData " +
                              "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
@@ -278,8 +278,8 @@ def manageUsers():
 
 
 # http://localhost:5000/userManagement/Customer - this will be the edit user page
-@app.route("/userManagement/Customer", methods=["GET", "POST"])
-def manageUsers():
+@app.route("/userManagement/Customer/", methods=["GET", "POST"])
+def manageCustomers():
 
     # connect
     conn = mysql.connect()
@@ -291,14 +291,19 @@ def manageUsers():
     if "loggedin" not in session:
         return redirect(url_for("home"))
 
-    if session['Role'] == "Manager":
+    if session['Role'] == "Manager" or session['Role'] == 'Custrep':
         # check if "username" and "password" POST requests exist (user submitted form)
         if request.method == "GET":
 
-            CustomerQuery = ("SELECT * FROM CustomerData " +
-                             "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
-                             "LEFT JOIN Contact ON Contact.AccNumber = CustomerData.AccNumber;")
+            # CustomerQuery = ("SELECT * FROM CustomerData " +
+            #                  "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
+            #                  "LEFT JOIN Contact ON Contact.AccNumber = CustomerData.AccNumber;")
+            CustomerQuery = ("SELECT SUM(ReservationData.TotalFare), Accounts.AccNumber, CustomerData.Preferences, Acc.Username"+
+            "FROM Portfolio, ReservationData, Accounts, Legs, CustomerData "+
+            "WHERE Accounts.AccNumber = Portfolio.AccNumber AND Accounts.AccNumber = CustomerData.AccNumber "+
+            "AND Portfolio.ResNo = Legs.ResNo AND Legs.ResNo = ReservationData.ResNo GROUP BY Accounts.AccNumber;")
             cursor.execute(CustomerQuery)
+            print(CustomerQuery)
             custData = cursor.fetchall()
             print(custData)
             print(custData[0])
@@ -311,27 +316,6 @@ def manageUsers():
             print(user)
             session['editUser'] = user
 
-            return redirect(url_for("editUser", requsername=user))
-        else:
-            pass
-    elif session['Role'] == 'CustRep':
-        if request.method == "GET":
-            CustomerQuery = ("SELECT * FROM CustomerData " +
-                             "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
-                             "LEFT JOIN Contact ON Contact.AccNumber = CustomerData.AccNumber;")
-            custData = cursor.fetchone()
-
-            EmployeeQuery = ("SELECT Employee.AccNumber, StartDate, AccCreateDate, Username, EmailAddress, FirstName, LastName, Accounts.Role, CreatedByUser, DateModified, Telephone "
-                             + "FROM databaseproject.Employee "
-                             + "LEFT JOIN databaseproject.Accounts ON Accounts.AccNumber = Employee.AccNumber "
-                             + "LEFT JOIN databaseproject.Contact ON Contact.AccNumber = Employee.AccNumber;")
-            empData = cursor.fetchone()
-            return render_template("editCustomer.html", empData=empData, custData=custData, role=session['Role'], username=session['Username'])
-
-        elif request.method == "POST":
-            user = request.form['editUser']
-            print(user)
-            session['editUser'] = user
             return redirect(url_for("editUser", requsername=user))
         else:
             pass
@@ -376,7 +360,7 @@ def Flights():
             return redirect(url_for("editUser"))
         else:
             pass
-    elif session['Role'] == 'CustRep':
+    elif session['Role'] == 'Custrep':
         if request.method == "GET":
             CustomerQuery = ("SELECT * FROM CustomerData " +
                              "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
@@ -417,30 +401,17 @@ def resDataCustomer():
     if request.method == "GET":
         # check if "username" and "password" POST requests exist (user submitted form)
         if session['Role'] == "Manager" or session['Role'] == "Custrep":
-            Query = ("SELECT * FROM ReservationData, Legs, Booking " + 
-            "WHERE ReservationData.ResNo = Legs.ResNo AND Booking.ResNo = Legs.ResNo;")
-            print(Query)
-            cursor.execute(Query)
-            Data = cursor.fetchall()
-            print(Data)
 
-            FLNOQuery = ("SELECT FLNO FROM ReservationData, Legs, Booking " + 
-            "WHERE ReservationData.ResNo = Legs.ResNo AND Booking.ResNo = Legs.ResNo;")
-            print(FLNOQuery)
-            cursor.execute(FLNOQuery)
-            FLNOData = cursor.fetchall()
-            print(FLNOData)
-
-            custQuery = ("SELECT AccNumber, Username FROM databaseproject.ReservationData, databaseproject.Legs, "+ 
+            custQuery = ("SELECT * FROM databaseproject.ReservationData, databaseproject.Legs, "+ 
             "databaseproject.Booking, databaseproject.Accounts, databaseproject.Portfolio "+ 
             "WHERE ReservationData.ResNo = Legs.ResNo AND Booking.ResNo = Legs.ResNo "+ 
             "AND Portfolio.ResNo = ReservationData.ResNo AND Accounts.AccNumber = Portfolio.AccNumber;")
             print(custQuery)
             cursor.execute(custQuery)
-            custData = cursor.fetchall()
-            print(custData)
+            Data = cursor.fetchall()
+            print(Data)
 
-            return render_template("Flights.html", Data=Data, FLNOData=FLNOData, custData=custData, role=session['Role'], username=session['Username'])
+            return render_template("resData.html", Data=Data, role=session['Role'], username=session['Username'])
 
         elif request.method == "POST":
             # imd = request.form.to_dict(flat=False)
@@ -451,7 +422,7 @@ def resDataCustomer():
             return redirect(url_for("editUser"))
         else:
             pass
-    elif session['Role'] == 'CustRep':
+    elif session['Role'] == 'Custrep':
         if request.method == "GET":
             CustomerQuery = ("SELECT * FROM CustomerData " +
                              "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
@@ -527,7 +498,7 @@ def resDataFlights():
             return redirect(url_for("editUser"))
         else:
             pass
-    elif session['Role'] == 'CustRep':
+    elif session['Role'] == 'Custrep':
         if request.method == "GET":
             CustomerQuery = ("SELECT * FROM CustomerData " +
                              "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
@@ -612,9 +583,9 @@ def mostActive():
         # check if "username" and "password" POST requests exist (user submitted form)
         if session['Role'] == "Manager":
 
-            Query = ("SELECT * FROM Flights WHERE " + 
+            Query = ("SELECT * FROM Flights, FlightFares, OperatedBy, StopsAt, Airlines WHERE " + 
             "FlightFares.FLNO = Flights.FLNO AND OperatedBy.FLNO = Flights.FLNO AND " +
-            "OperatedBy.ALID  = Airlines.ALID AND StopsAt.FLNO = Flights.FLNO AND" +
+            "OperatedBy.ALID  = Airlines.ALID AND StopsAt.FLNO = Flights.FLNO AND " +
             "CHAR_LENGTH(DayOfWeek) IN (SELECT MAX(CHAR_LENGTH(DayOfWeek)) FROM Flights);")
             print(Query)
             cursor.execute(Query)

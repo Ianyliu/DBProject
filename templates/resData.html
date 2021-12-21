@@ -376,44 +376,72 @@
             let table = $('#table').DataTable({
                 data: data,
                 columns: [{
-                        title: 'Flight Number',
-                        data: 'FLNO'
+                        title: 'Reservation Number',
+                        data: 'ResNo'
                     },
                     {
-                        title: 'Number Of Seats',
-                        data: 'NumOfSeats'
+                        title: 'Reservation Date',
+                        data: 'ResDate'
                     },
                     {
-                        title: 'Airline ID',
-                        data: 'ALID'
+                        title: 'First Name',
+                        data: 'FirstName'
                     },
                     {
-                        title: 'Day Of Week',
-                        data: 'DayOfWeek'
+                        title: 'Last Name',
+                        data: 'LastName'
                     },
                     {
-                        title: 'Fare',
-                        data: 'Fare'
+                        title: 'Number Of Passengers',
+                        data: 'Passengers'
                     },
                     {
-                        title: 'Advanced Purchase',
-                        data: 'AdvancedPurchase'
+                        title: 'Total Fare',
+                        data: 'TotalFare'
                     },
                     {
-                        data: 'LengthOfStay',
-                        title: 'Length Of Stay'
+                        title: 'Fare Restriction',
+                        data: 'FareRestriction'
                     },
                     {
-                        title: 'Operated By',
-                        data: 'ALname'
+                        title: 'Flight Type',
+                        data: 'FlightType'
                     },
                     {
-                        title: 'Arrival Time',
-                        data: 'ArrivalTime'
+                        title: 'Domestic Or Intenational',
+                        data: 'Domestic',
                     },
                     {
-                        title: 'Depart Time',
-                        data: 'DepartTime'
+                        title: 'Status',
+                        data: 'Status'
+                    },
+                    {
+                        title: 'From',
+                        data: 'FromAirport'
+                    },
+                    {
+                        title: 'To',
+                        data: 'ToAirport'
+                    },
+                    {
+                        title: 'Class',
+                        data: 'Class'
+                    },
+                    {
+                        title: 'Departure Datetime',
+                        data: 'DepDatetime'
+                    },
+                    {
+                        title: 'Arrival Datetime',
+                        data: 'ArrDatetime'
+                    },
+                    {
+                        title: 'Special Meal',
+                        data: 'SpecialMeal'
+                    },
+                    {
+                        title: 'BookingFee',
+                        data: 'BookFee'
                     }
                 ],
                 "responsive": true,
