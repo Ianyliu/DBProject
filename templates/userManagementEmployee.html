@@ -3,7 +3,7 @@
 <html>
 
 <head>
-    <title>Flights</title>
+    <title>CitySmart - User Management</title>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="//cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css">
     <link rel="stylesheet" href="//unpkg.com/flatpickr/dist/flatpickr.min.css">
@@ -368,54 +368,68 @@
 
         <script type="text/javascript">
             let rowSelected, thArray, DropMenu, queryString1, queryString2;
-            let data = '{{Data | tojson}}';
+            let data = '{{empData | tojson}}';
             data = JSON.parse(data);
             let role = '{{role}}'
-            let mostRevenue = '{{most}}';
-            console.log(role);
+            console.log(data);
             console.log(data[0]);
-            let table;
-            table = $('#table').DataTable({
+            let table = $('#table').DataTable({
                 data: data,
                 columns: [{
-                        title: 'Flight Number',
-                        data: 'FLNO'
+                        title: 'Account Number',
+                        data: 'AccNumber'
                     },
                     {
-                        title: 'Number Of Seats',
-                        data: 'NumOfSeats'
+                        title: 'SSN',
+                        data: 'SSN'
                     },
                     {
-                        title: 'Airline ID',
-                        data: 'ALID'
+                        title: 'Username',
+                        data: 'Username'
                     },
                     {
-                        title: 'Day Of Week',
-                        data: 'DayOfWeek'
+                        title: 'First Name',
+                        data: 'FirstName'
                     },
                     {
-                        title: 'Fare',
-                        data: 'Fare'
+                        title: 'Last Name',
+                        data: 'LastName'
                     },
                     {
-                        title: 'Advanced Purchase',
-                        data: 'AdvancedPurchase'
+                        title: 'Role',
+                        data: 'Role'
                     },
                     {
-                        data: 'LengthOfStay',
-                        title: 'Length Of Stay'
+                        title: 'Hourly Rate',
+                        data: 'HourlyRate'
                     },
                     {
-                        title: 'Operated By',
-                        data: 'ALname'
+                        title: 'Email Address',
+                        data: 'EmailAddress'
                     },
                     {
-                        title: 'Arrival Time',
-                        data: 'ArrivalTime'
+                        title: 'Telephone Number',
+                        data: 'Telephone'
                     },
                     {
-                        title: 'Depart Time',
-                        data: 'DepartTime'
+                        title: 'Start Date',
+                        data: 'StartDate'
+                    },
+                    {
+                        title: 'Account Created On',
+                        data: 'AccCreateDate'
+                    },
+                    {
+                        title: 'Account Email',
+                        data: 'AccEmail'
+                    },
+                    {
+                        title: 'Created by User',
+                        data: 'CreatedByUser'
+                    },
+                    {
+                        title: 'Date Modified',
+                        data: 'DateModified'
                     }
                 ],
                 "responsive": true,
@@ -445,7 +459,7 @@
                 window.location.replace('/');
             }
 
-            $("#editUserButton").on("click", async function () {
+            $("#editUserButton").on("click", function () {
                 console.log('hi!')
                 // let tstring = "";
                 // for (let i = 0; i < thArray.length; i++) {

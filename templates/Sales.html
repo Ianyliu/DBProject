@@ -331,7 +331,7 @@
         </div>
         <br>
         <h4 style="margin-left:80px;"><strong>Most Recent Records:</strong></h4>
-        <table id="table" cellspacing="0" width="100%">
+        <table id="table" cellspacing="0" style="text-align:center; margin: 0 auto;">
             <!-- <thead>
                 <tr>
                     <th>Account Number</th>
@@ -368,54 +368,23 @@
 
         <script type="text/javascript">
             let rowSelected, thArray, DropMenu, queryString1, queryString2;
-            let data = '{{Data | tojson}}';
+            let data = '{{salesData | tojson}}';
             data = JSON.parse(data);
             let role = '{{role}}'
-            let mostRevenue = '{{most}}';
             console.log(role);
             console.log(data[0]);
-            let table;
-            table = $('#table').DataTable({
+            let table = $('#table').DataTable({
                 data: data,
                 columns: [{
-                        title: 'Flight Number',
-                        data: 'FLNO'
+                        title: 'Year',
+                        data: 'YEAR(ResDate)'
+                    }, {
+                        title: 'Month',
+                        data: 'MONTH(ResDate)'
                     },
                     {
-                        title: 'Number Of Seats',
-                        data: 'NumOfSeats'
-                    },
-                    {
-                        title: 'Airline ID',
-                        data: 'ALID'
-                    },
-                    {
-                        title: 'Day Of Week',
-                        data: 'DayOfWeek'
-                    },
-                    {
-                        title: 'Fare',
-                        data: 'Fare'
-                    },
-                    {
-                        title: 'Advanced Purchase',
-                        data: 'AdvancedPurchase'
-                    },
-                    {
-                        data: 'LengthOfStay',
-                        title: 'Length Of Stay'
-                    },
-                    {
-                        title: 'Operated By',
-                        data: 'ALname'
-                    },
-                    {
-                        title: 'Arrival Time',
-                        data: 'ArrivalTime'
-                    },
-                    {
-                        title: 'Depart Time',
-                        data: 'DepartTime'
+                        title: 'Sales in USD',
+                        data: 'SUM(TotalFare)'
                     }
                 ],
                 "responsive": true,

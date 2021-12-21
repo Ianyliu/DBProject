@@ -371,11 +371,9 @@
             let data = '{{Data | tojson}}';
             data = JSON.parse(data);
             let role = '{{role}}'
-            let mostRevenue = '{{most}}';
             console.log(role);
             console.log(data[0]);
-            let table;
-            table = $('#table').DataTable({
+            let table = $('#table').DataTable({
                 data: data,
                 columns: [{
                         title: 'Flight Number',
