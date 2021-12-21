@@ -295,18 +295,15 @@ def manageCustomers():
         # check if "username" and "password" POST requests exist (user submitted form)
         if request.method == "GET":
 
-            # CustomerQuery = ("SELECT * FROM CustomerData " +
-            #                  "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
-            #                  "LEFT JOIN Contact ON Contact.AccNumber = CustomerData.AccNumber;")
-            CustomerQuery = ("SELECT SUM(ReservationData.TotalFare), Accounts.AccNumber, CustomerData.Preferences, Acc.Username"+
-            "FROM Portfolio, ReservationData, Accounts, Legs, CustomerData "+
-            "WHERE Accounts.AccNumber = Portfolio.AccNumber AND Accounts.AccNumber = CustomerData.AccNumber "+
-            "AND Portfolio.ResNo = Legs.ResNo AND Legs.ResNo = ReservationData.ResNo GROUP BY Accounts.AccNumber;")
+            CustomerQuery = ("SELECT * FROM CustomerData " +
+                             "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
+                             "LEFT JOIN Contact ON Contact.AccNumber = CustomerData.AccNumber;")
             cursor.execute(CustomerQuery)
             print(CustomerQuery)
             custData = cursor.fetchall()
             print(custData)
             print(custData[0])
+
 
             return render_template("userManagementCustomer.html", custData=custData, role=session['Role'])
 
