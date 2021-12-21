@@ -1,7 +1,7 @@
 from io import SEEK_CUR
 from flask import Flask, request, session, redirect, url_for, render_template
 from datetime import datetime
-from werkzeug.datastructures import MultiDict
+import calendar
 from flaskext.mysql import MySQL
 import pymysql
 import re
@@ -214,8 +214,8 @@ def editUser(requsername):
         return redirect(url_for("home"))
 
 
-# http://localhost:5000/userManagement - this will be the edit user page
-@app.route("/userManagement/", methods=["GET", "POST"])
+# http://localhost:5000/userManagement/Employee - this will be the edit user page
+@app.route("/userManagement/Employee", methods=["GET", "POST"])
 def manageUsers():
 
     # connect
@@ -240,15 +240,8 @@ def manageUsers():
             print(type(empData))
             print(empData[0])
 
-            CustomerQuery = ("SELECT * FROM CustomerData " +
-                             "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
-                             "LEFT JOIN Contact ON Contact.AccNumber = CustomerData.AccNumber;")
-            cursor.execute(CustomerQuery)
-            custData = cursor.fetchall()
-            print(custData)
-            print(custData[0])
 
-            return render_template("userManagement.html", empData=empData, custData=custData, role=session['Role'])
+            return render_template("userManagementEmployee.html", empData=empData, role=session['Role'])
 
         elif request.method == "POST":
             # imd = request.form.to_dict(flat=False)
@@ -283,6 +276,67 @@ def manageUsers():
     else:
         return redirect(url_for("home"))
 
+
+# http://localhost:5000/userManagement/Customer - this will be the edit user page
+@app.route("/userManagement/Customer", methods=["GET", "POST"])
+def manageUsers():
+
+    # connect
+    conn = mysql.connect()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    # output message if something goes wrong...
+    msg = ""
+
+    if "loggedin" not in session:
+        return redirect(url_for("home"))
+
+    if session['Role'] == "Manager":
+        # check if "username" and "password" POST requests exist (user submitted form)
+        if request.method == "GET":
+
+            CustomerQuery = ("SELECT * FROM CustomerData " +
+                             "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
+                             "LEFT JOIN Contact ON Contact.AccNumber = CustomerData.AccNumber;")
+            cursor.execute(CustomerQuery)
+            custData = cursor.fetchall()
+            print(custData)
+            print(custData[0])
+
+            return render_template("userManagementCustomer.html", custData=custData, role=session['Role'])
+
+        elif request.method == "POST":
+            # imd = request.form.to_dict(flat=False)
+            user = request.form['editUser']
+            print(user)
+            session['editUser'] = user
+
+            return redirect(url_for("editUser", requsername=user))
+        else:
+            pass
+    elif session['Role'] == 'CustRep':
+        if request.method == "GET":
+            CustomerQuery = ("SELECT * FROM CustomerData " +
+                             "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
+                             "LEFT JOIN Contact ON Contact.AccNumber = CustomerData.AccNumber;")
+            custData = cursor.fetchone()
+
+            EmployeeQuery = ("SELECT Employee.AccNumber, StartDate, AccCreateDate, Username, EmailAddress, FirstName, LastName, Accounts.Role, CreatedByUser, DateModified, Telephone "
+                             + "FROM databaseproject.Employee "
+                             + "LEFT JOIN databaseproject.Accounts ON Accounts.AccNumber = Employee.AccNumber "
+                             + "LEFT JOIN databaseproject.Contact ON Contact.AccNumber = Employee.AccNumber;")
+            empData = cursor.fetchone()
+            return render_template("editCustomer.html", empData=empData, custData=custData, role=session['Role'], username=session['Username'])
+
+        elif request.method == "POST":
+            user = request.form['editUser']
+            print(user)
+            session['editUser'] = user
+            return redirect(url_for("editUser", requsername=user))
+        else:
+            pass
+    else:
+        return redirect(url_for("home"))
 
 # http://localhost:5000/Flights - this will be the flights page
 @app.route("/Flights/", methods=["GET", "POST"])
@@ -345,10 +399,325 @@ def Flights():
             pass
     else:
         return redirect(url_for("home"))
+##
+# http://localhost:5000/resData - this will be the flights page
+@app.route("/resData/Customer/", methods=["GET", "POST"])
+def resDataCustomer():
+
+    # connect
+    conn = mysql.connect()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    # output message if something goes wrong...
+    msg = ""
+
+    if "loggedin" not in session:
+        return redirect(url_for("home"))
+
+    if request.method == "GET":
+        # check if "username" and "password" POST requests exist (user submitted form)
+        if session['Role'] == "Manager" or session['Role'] == "Custrep":
+            Query = ("SELECT * FROM ReservationData, Legs, Booking " + 
+            "WHERE ReservationData.ResNo = Legs.ResNo AND Booking.ResNo = Legs.ResNo;")
+            print(Query)
+            cursor.execute(Query)
+            Data = cursor.fetchall()
+            print(Data)
+
+            FLNOQuery = ("SELECT FLNO FROM ReservationData, Legs, Booking " + 
+            "WHERE ReservationData.ResNo = Legs.ResNo AND Booking.ResNo = Legs.ResNo;")
+            print(FLNOQuery)
+            cursor.execute(FLNOQuery)
+            FLNOData = cursor.fetchall()
+            print(FLNOData)
+
+            custQuery = ("SELECT AccNumber, Username FROM databaseproject.ReservationData, databaseproject.Legs, "+ 
+            "databaseproject.Booking, databaseproject.Accounts, databaseproject.Portfolio "+ 
+            "WHERE ReservationData.ResNo = Legs.ResNo AND Booking.ResNo = Legs.ResNo "+ 
+            "AND Portfolio.ResNo = ReservationData.ResNo AND Accounts.AccNumber = Portfolio.AccNumber;")
+            print(custQuery)
+            cursor.execute(custQuery)
+            custData = cursor.fetchall()
+            print(custData)
+
+            return render_template("Flights.html", Data=Data, FLNOData=FLNOData, custData=custData, role=session['Role'], username=session['Username'])
+
+        elif request.method == "POST":
+            # imd = request.form.to_dict(flat=False)
+            user = request.form['editUser']
+            print(user)
+            session['editUser'] = user
+
+            return redirect(url_for("editUser"))
+        else:
+            pass
+    elif session['Role'] == 'CustRep':
+        if request.method == "GET":
+            CustomerQuery = ("SELECT * FROM CustomerData " +
+                             "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
+                             "LEFT JOIN Contact ON Contact.AccNumber = CustomerData.AccNumber;")
+            custData = cursor.fetchone()
+
+            EmployeeQuery = ("SELECT Employee.AccNumber, StartDate, AccCreateDate, Username, EmailAddress, FirstName, LastName, Accounts.Role, CreatedByUser, DateModified, Telephone "
+                             + "FROM databaseproject.Employee "
+                             + "LEFT JOIN databaseproject.Accounts ON Accounts.AccNumber = Employee.AccNumber "
+                             + "LEFT JOIN databaseproject.Contact ON Contact.AccNumber = Employee.AccNumber;")
+            empData = cursor.fetchone()
+            return render_template("editCustomer.html", empData=empData, custData=custData, role=session['Role'], username=session['Username'])
+
+        elif request.method == "POST":
+            user = request.form['editUser']
+            print(user)
+            session['editUser'] = user
+            return redirect(url_for("editUser"))
+        else:
+            pass
+    else:
+        return redirect(url_for("home"))
+
+##
+# http://localhost:5000/resData - this will be the flights page
+@app.route("/resData/Flights/", methods=["GET", "POST"])
+def resDataFlights():
+
+    # connect
+    conn = mysql.connect()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    # output message if something goes wrong...
+    msg = ""
+
+    if "loggedin" not in session:
+        return redirect(url_for("home"))
+
+    if request.method == "GET":
+        # check if "username" and "password" POST requests exist (user submitted form)
+        if session['Role'] == "Manager" or session['Role'] == "Custrep":
+            Query = ("SELECT * FROM ReservationData, Legs, Booking " + 
+            "WHERE ReservationData.ResNo = Legs.ResNo AND Booking.ResNo = Legs.ResNo;")
+            print(Query)
+            cursor.execute(Query)
+            Data = cursor.fetchall()
+            print(Data)
+
+            FLNOQuery = ("SELECT FLNO FROM ReservationData, Legs, Booking " + 
+            "WHERE ReservationData.ResNo = Legs.ResNo AND Booking.ResNo = Legs.ResNo;")
+            print(FLNOQuery)
+            cursor.execute(FLNOQuery)
+            FLNOData = cursor.fetchall()
+            print(FLNOData)
+
+            custQuery = ("SELECT AccNumber, Username FROM databaseproject.ReservationData, databaseproject.Legs, "+ 
+            "databaseproject.Booking, databaseproject.Accounts, databaseproject.Portfolio "+ 
+            "WHERE ReservationData.ResNo = Legs.ResNo AND Booking.ResNo = Legs.ResNo "+ 
+            "AND Portfolio.ResNo = ReservationData.ResNo AND Accounts.AccNumber = Portfolio.AccNumber;")
+            print(custQuery)
+            cursor.execute(custQuery)
+            custData = cursor.fetchall()
+            print(custData)
+
+            return render_template("Flights.html", Data=Data, FLNOData=FLNOData, custData=custData, role=session['Role'], username=session['Username'], most=False)
+
+        elif request.method == "POST":
+            # imd = request.form.to_dict(flat=False)
+            user = request.form['editUser']
+            print(user)
+            session['editUser'] = user
+
+            return redirect(url_for("editUser"))
+        else:
+            pass
+    elif session['Role'] == 'CustRep':
+        if request.method == "GET":
+            CustomerQuery = ("SELECT * FROM CustomerData " +
+                             "LEFT JOIN Accounts ON Accounts.AccNumber = CustomerData.AccNumber " +
+                             "LEFT JOIN Contact ON Contact.AccNumber = CustomerData.AccNumber;")
+            custData = cursor.fetchone()
+
+            EmployeeQuery = ("SELECT Employee.AccNumber, StartDate, AccCreateDate, Username, EmailAddress, FirstName, LastName, Accounts.Role, CreatedByUser, DateModified, Telephone "
+                             + "FROM databaseproject.Employee "
+                             + "LEFT JOIN databaseproject.Accounts ON Accounts.AccNumber = Employee.AccNumber "
+                             + "LEFT JOIN databaseproject.Contact ON Contact.AccNumber = Employee.AccNumber;")
+            empData = cursor.fetchone()
+            return render_template("editCustomer.html", empData=empData, custData=custData, role=session['Role'], username=session['Username'])
+
+        elif request.method == "POST":
+            user = request.form['editUser']
+            print(user)
+            session['editUser'] = user
+            return redirect(url_for("editUser"))
+        else:
+            pass
+    else:
+        return redirect(url_for("home"))
+
+##
+# http://localhost:5000/mostRevenue - this will be the flights page
+@app.route("/mostRevenue/", methods=["GET", "POST"])
+def mostRevenue():
+
+    # connect
+    conn = mysql.connect()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    # output message if something goes wrong...
+    msg = ""
+
+    if "loggedin" not in session:
+        return redirect(url_for("home"))
+
+    if request.method == "GET":
+        # check if "username" and "password" POST requests exist (user submitted form)
+        if session['Role'] == "Manager":
+            Query = ("SELECT SUM(TotalFare) AS totalFare, Accounts.Username, Accounts.AccNumber, Accounts.Firstname, Accounts.Lastname " +
+            "FROM ReservationData, Legs, Accounts, Portfolio "+ 
+            "WHERE ReservationData.ResNo = Legs.ResNo AND Portfolio.AccNumber = Accounts.AccNumber "+
+            "AND Portfolio.ResNo = Legs.ResNo "+
+            "GROUP BY Accounts.Username ORDER BY totalFare DESC LIMIT 1;")
+            print(Query)
+            cursor.execute(Query)
+            Data = cursor.fetchall()
+            print(Data)
+
+            return render_template("Flights.html", Data=Data, role=session['Role'], username=session['Username'])
+
+        elif request.method == "POST":
+            # imd = request.form.to_dict(flat=False)
+            user = request.form['editUser']
+            print(user)
+            session['editUser'] = user
+
+            return redirect(url_for("editUser"))
+        else:
+            pass
+    else:
+        return redirect(url_for("home"))
+
+##
+# http://localhost:5000/mostRevenue - this will be the flights page
+@app.route("/mostActive/", methods=["GET", "POST"])
+def mostActive():
+
+    # connect
+    conn = mysql.connect()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    # output message if something goes wrong...
+    msg = ""
+
+    if "loggedin" not in session:
+        return redirect(url_for("home"))
+
+    if request.method == "GET":
+        # check if "username" and "password" POST requests exist (user submitted form)
+        if session['Role'] == "Manager":
+
+            Query = ("SELECT * FROM Flights WHERE " + 
+            "FlightFares.FLNO = Flights.FLNO AND OperatedBy.FLNO = Flights.FLNO AND " +
+            "OperatedBy.ALID  = Airlines.ALID AND StopsAt.FLNO = Flights.FLNO AND" +
+            "CHAR_LENGTH(DayOfWeek) IN (SELECT MAX(CHAR_LENGTH(DayOfWeek)) FROM Flights);")
+            print(Query)
+            cursor.execute(Query)
+            Data = cursor.fetchall()
+            print(Data)
+
+            return render_template("Flights.html", Data=Data, role=session['Role'], username=session['Username'], most=True)
+
+        elif request.method == "POST":
+            # imd = request.form.to_dict(flat=False)
+            user = request.form['editUser']
+            print(user)
+            session['editUser'] = user
+
+            return redirect(url_for("editUser"))
+        else:
+            pass
+    else:
+        return redirect(url_for("home"))
+
+# http://localhost:5000/Sales - this will be the flights page
+@app.route("/Sales/", methods=["GET", "POST"])
+def Sales():
+
+    # connect
+    conn = mysql.connect()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    # output message if something goes wrong...
+    msg = ""
+
+    if "loggedin" not in session:
+        return redirect(url_for("home"))
+
+    if session['Role'] == "Manager":
+        # check if "username" and "password" POST requests exist (user submitted form)
+        if request.method == "GET":
+            Query = ("SELECT YEAR(ResDate), MONTH(ResDate), SUM(TotalFare) FROM databaseproject.ReservationData GROUP BY MONTH(ResDate) ORDER BY YEAR(ResDate), MONTH (ResDate);")
+            print(Query)
+            cursor.execute(Query)
+            salesData = cursor.fetchall()
+            print(salesData)
+
+            for i in salesData:
+                monthInt = i['MONTH(ResDate)']
+                print(monthInt)
+                month = calendar.month_name[monthInt]
+                i['MONTH(ResDate)'] = month
+                print(i['MONTH(ResDate)'])
+
+            return render_template("Sales.html", salesData=salesData, role=session['Role'], username=session['Username'])
+
+        elif request.method == "POST":
+            # imd = request.form.to_dict(flat=False)
+            user = request.form['editUser']
+            print(user)
+            session['editUser'] = user
+
+            return redirect(url_for("editUser"))
+        else:
+            pass
+    else:
+        return redirect(url_for("home"))
+
+# http://localhost:5000/mailingList - this will be the flights page
+@app.route("/mailingList/", methods=["GET", "POST"])
+def mailingList():
+
+    # connect
+    conn = mysql.connect()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    # output message if something goes wrong...
+    msg = ""
+
+    if "loggedin" not in session:
+        return redirect(url_for("home"))
+
+    if session['Role'] == "Manager" or session['Role'] == "Custrep":
+        # check if "username" and "password" POST requests exist (user submitted form)
+        if request.method == "GET":
+            Query = ("SELECT YEAR(ResDate), MONTH(ResDate), SUM(TotalFare) FROM databaseproject.ReservationData GROUP BY MONTH(ResDate) ORDER BY YEAR(ResDate), MONTH (ResDate);")
+            print(Query)
+            cursor.execute(Query)
+            Data = cursor.fetchall()
+            print(Data)
+
+            return render_template("mailingList.html", Data=Data, role=session['Role'], username=session['Username'])
+
+        elif request.method == "POST":
+            # imd = request.form.to_dict(flat=False)
+            user = request.form['editUser']
+            print(user)
+            session['editUser'] = user
+
+            return redirect(url_for("editUser"))
+        else:
+            pass
+    else:
+        return redirect(url_for("home"))
+
 
 # http://localhost:5000/logout - this will be the logout page
-
-
 @app.route("/logout")
 def logout():
     # remove session data, this will log the user out
