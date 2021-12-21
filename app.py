@@ -271,7 +271,7 @@ def manageUsers():
                              + "LEFT JOIN databaseproject.Accounts ON Accounts.AccNumber = Employee.AccNumber "
                              + "LEFT JOIN databaseproject.Contact ON Contact.AccNumber = Employee.AccNumber;")
             empData = cursor.fetchone()
-            return render_template("editCustomer.html", empData=empData, custData=custData, role=session['Role'], username=session['username'])
+            return render_template("editCustomer.html", empData=empData, custData=custData, role=session['Role'], username=session['Username'])
 
         elif request.method == "POST":
             user = request.form['editUser']
@@ -286,7 +286,7 @@ def manageUsers():
 
 # http://localhost:5000/Flights - this will be the flights page
 @app.route("/Flights/", methods=["GET", "POST"])
-def flights():
+def Flights():
 
     # connect
     conn = mysql.connect()
@@ -303,12 +303,15 @@ def flights():
         if request.method == "GET":
             Query = ("SELECT * FROM Flights " + 
             "LEFT JOIN FlightFares ON FlightFares.FLNO = Flights.FLNO " + 
-            "LEFT JOIN OperatedBy ON OperatedBy.FLNO = FlightFares.FLNO " + 
+            "LEFT JOIN OperatedBy ON OperatedBy.FLNO = Flights.FLNO " + 
+            "LEFT JOIN Airlines ON OperatedBy.ALID  = Airlines.ALID " +
             "LEFT JOIN StopsAt ON StopsAt.FLNO = Flights.FLNO;")
+            print(Query)
             cursor.execute(Query)
             Data = cursor.fetchall()
+            print(Data)
 
-            return render_template("Flights.html", Data=Data, role=session['Role'])
+            return render_template("Flights.html", Data=Data, role=session['Role'], username=session['Username'])
 
         elif request.method == "POST":
             # imd = request.form.to_dict(flat=False)
@@ -331,7 +334,7 @@ def flights():
                              + "LEFT JOIN databaseproject.Accounts ON Accounts.AccNumber = Employee.AccNumber "
                              + "LEFT JOIN databaseproject.Contact ON Contact.AccNumber = Employee.AccNumber;")
             empData = cursor.fetchone()
-            return render_template("editCustomer.html", empData=empData, custData=custData, role=session['Role'], username=session['username'])
+            return render_template("editCustomer.html", empData=empData, custData=custData, role=session['Role'], username=session['Username'])
 
         elif request.method == "POST":
             user = request.form['editUser']

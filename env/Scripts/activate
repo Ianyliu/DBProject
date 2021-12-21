@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\liuus\Documents\FTC\Database\Project\feitian1\env"
+VIRTUAL_ENV="C:\Users\liuus\Documents\FTC\Database\DBProject\env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
